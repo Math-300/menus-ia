@@ -1,0 +1,171 @@
+[
+    {
+        "id": "m1",
+        "name": "Truffle Smash",
+        "description": "Doble carne madurada, mayonesa de trufa negra, queso suizo y pan brioche artesanal.",
+        "price": 38000,
+        "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd",
+        "category": "burgers",
+        "tags": [
+            "Popular"
+        ],
+        "popular": true,
+        "available": true,
+        "ingredients": [
+            "Trufa Negra",
+            "Queso Suizo",
+            "Brioche",
+            "Res Madurada"
+        ],
+        "pairing": "Malbec Reserva",
+        "modifiers": [
+            {
+                "id": "temp",
+                "name": "Término de la carne",
+                "minSelection": 1,
+                "maxSelection": 1,
+                "options": [
+                    {
+                        "id": "t1",
+                        "name": "Medio (Recomendado)",
+                        "price": 0,
+                        "available": true
+                    },
+                    {
+                        "id": "t2",
+                        "name": "Tres Cuartos",
+                        "price": 0,
+                        "available": true
+                    },
+                    {
+                        "id": "t3",
+                        "name": "Bien Cocido",
+                        "price": 0,
+                        "available": true
+                    }
+                ]
+            },
+            {
+                "id": "extras",
+                "name": "Extras & Lujos",
+                "minSelection": 0,
+                "maxSelection": 3,
+                "options": [
+                    {
+                        "id": "e1",
+                        "name": "Huevo Frito",
+                        "price": 4000,
+                        "available": true
+                    },
+                    {
+                        "id": "e2",
+                        "name": "Tocino Ahumado",
+                        "price": 6000,
+                        "available": true
+                    },
+                    {
+                        "id": "e3",
+                        "name": "Extra Queso",
+                        "price": 3000,
+                        "available": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "m2",
+        "name": "Tartar Atún",
+        "description": "Aleta azul, ponzu, sésamo crujiente.",
+        "price": 42000,
+        "image": "https://images.unsplash.com/photo-1534482421-64566f976cfa",
+        "category": "starters",
+        "tags": [
+            "Raw"
+        ],
+        "new": true,
+        "available": true,
+        "pairing": "Sauvignon Blanc",
+        "ingredients": [
+            "Atún Rojo",
+            "Ponzu",
+            "Aguacate"
+        ]
+    },
+    {
+        "id": "m3",
+        "name": "Wagyu Steak",
+        "description": "A5 Japonés, papas trufadas.",
+        "price": 125000,
+        "image": "https://images.unsplash.com/photo-1600891964092-4316c288032e",
+        "category": "mains",
+        "tags": [
+            "Premium"
+        ],
+        "chefChoice": true,
+        "available": true,
+        "pairing": "Cabernet Sauvignon"
+    },
+    {
+        "id": "m4",
+        "name": "Volcán Choco",
+        "description": "Fondant 70%, helado vainilla.",
+        "price": 22000,
+        "image": "https://images.unsplash.com/photo-1606313564200-e75d5e30476d",
+        "category": "desserts",
+        "tags": [
+            "Dulce"
+        ],
+        "available": true,
+        "pairing": "Espresso Martini"
+    },
+    {
+        "id": "d1",
+        "name": "Copa Malbec Reserva",
+        "description": "Mendoza, Argentina. Notas a ciruela y tabaco.",
+        "price": 28000,
+        "image": "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3",
+        "category": "drinks",
+        "tags": [
+            "Vino Tinto"
+        ],
+        "available": true
+    },
+    {
+        "id": "d2",
+        "name": "Cerveza Stout Artesanal",
+        "description": "Notas a café y chocolate amargo.",
+        "price": 15000,
+        "image": "https://images.unsplash.com/photo-1567696911980-2eed69a46042",
+        "category": "drinks",
+        "tags": [
+            "Cerveza"
+        ],
+        "available": true
+    },
+    {
+        "id": "d3",
+        "name": "Sauvignon Blanc",
+        "description": "Fresco, cítrico y mineral.",
+        "price": 24000,
+        "image": "https://images.unsplash.com/photo-1572569970938-16a30c51f501",
+        "category": "drinks",
+        "tags": [
+            "Vino Blanco"
+        ],
+        "available": true
+    },
+    {
+        "id": "d4",
+        "name": "Espresso Martini",
+        "description": "Vodka, Kahlua, Espresso fresco.",
+        "price": 32000,
+        "image": "https://images.unsplash.com/photo-1623861214046-63300885e3d7",
+        "category": "drinks",
+        "tags": [
+            "Coctel"
+        ],
+        "available": true,
+        "popular": true
+    }
+]

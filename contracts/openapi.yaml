@@ -1,0 +1,570 @@
+openapi: 3.0.3
+info:
+  title: MenuOS API
+  description: API contract for MenuOS - Digital Menu Platform
+  version: 1.0.0
+  contact:
+    name: MenuOS Team
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+  - url: https://api.menuos.app
+    description: Production server
+
+paths:
+  # ===========================================
+  # RESTAURANT ENDPOINTS
+  # ===========================================
+  /restaurants/{slug}:
+    get:
+      summary: Get restaurant by slug
+      tags: [Restaurants]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          example: demo-grill
+      responses:
+        '200':
+          description: Restaurant found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantData'
+        '404':
+          description: Restaurant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ===========================================
+  # MENU ENDPOINTS
+  # ===========================================
+  /restaurants/{restaurantId}/menu:
+    get:
+      summary: Get menu items for a restaurant
+      tags: [Menu]
+      parameters:
+        - name: restaurantId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: available
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of menu items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MenuItem'
+
+  /restaurants/{restaurantId}/menu/{itemId}:
+    get:
+      summary: Get single menu item
+      tags: [Menu]
+      parameters:
+        - name: restaurantId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Menu item details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+        '404':
+          description: Item not found
+
+  # ===========================================
+  # AI ENDPOINTS
+  # ===========================================
+  /ai/chat:
+    post:
+      summary: Chat with AI Concierge
+      tags: [AI]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  example: "¿Qué vino recomiendas para el steak?"
+                history:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ChatMessage'
+                context:
+                  $ref: '#/components/schemas/ChatContext'
+      responses:
+        '200':
+          description: AI response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIResponse'
+        '400':
+          description: Invalid request
+        '429':
+          description: Rate limit exceeded
+
+  /ai/generate-description:
+    post:
+      summary: Generate dish description
+      tags: [AI]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - dishName
+                - ingredients
+              properties:
+                dishName:
+                  type: string
+                  example: "Truffle Smash Burger"
+                ingredients:
+                  type: string
+                  example: "trufa negra, queso suizo, brioche"
+      responses:
+        '200':
+          description: Generated description
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  description:
+                    type: string
+
+  /ai/generate-image:
+    post:
+      summary: Generate dish image
+      tags: [AI]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                size:
+                  type: string
+                  enum: [1K, 2K, 4K]
+                  default: 1K
+      responses:
+        '200':
+          description: Generated image
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  image:
+                    type: string
+                    format: uri
+                    description: Base64 data URI
+
+  # ===========================================
+  # ORDER ENDPOINTS
+  # ===========================================
+  /orders:
+    post:
+      summary: Create new order
+      tags: [Orders]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid order data
+
+components:
+  schemas:
+    # ===========================================
+    # CORE SCHEMAS
+    # ===========================================
+    RestaurantData:
+      type: object
+      required:
+        - config
+        - menu
+        - categories
+        - stories
+      properties:
+        config:
+          $ref: '#/components/schemas/RestaurantConfig'
+        menu:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuItem'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        stories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Story'
+
+    RestaurantConfig:
+      type: object
+      required:
+        - id
+        - slug
+        - name
+        - tagline
+        - theme
+        - currency
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        tagline:
+          type: string
+        coverImage:
+          type: string
+          format: uri
+        logo:
+          type: string
+          format: uri
+        theme:
+          $ref: '#/components/schemas/RestaurantTheme'
+        currency:
+          type: string
+          default: "$"
+
+    RestaurantTheme:
+      type: object
+      required:
+        - colors
+        - fonts
+      properties:
+        colors:
+          type: object
+          required:
+            - primary
+            - secondary
+            - accent
+            - dark
+          properties:
+            primary:
+              type: string
+              example: "#F94144"
+            secondary:
+              type: string
+              example: "#1F2937"
+            accent:
+              type: string
+              example: "#F3722C"
+            dark:
+              type: string
+              example: "#030712"
+        fonts:
+          type: object
+          required:
+            - sans
+            - serif
+          properties:
+            sans:
+              type: string
+              example: "Inter, sans-serif"
+            serif:
+              type: string
+              example: "Playfair Display, serif"
+
+    MenuItem:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - price
+        - image
+        - category
+        - available
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        image:
+          type: string
+          format: uri
+        category:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        popular:
+          type: boolean
+        new:
+          type: boolean
+        chefChoice:
+          type: boolean
+        calories:
+          type: number
+        available:
+          type: boolean
+        modifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModifierGroup'
+        ingredients:
+          type: array
+          items:
+            type: string
+        pairing:
+          type: string
+
+    ModifierGroup:
+      type: object
+      required:
+        - id
+        - name
+        - minSelection
+        - maxSelection
+        - options
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        minSelection:
+          type: number
+        maxSelection:
+          type: number
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModifierOption'
+
+    ModifierOption:
+      type: object
+      required:
+        - id
+        - name
+        - price
+        - available
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        available:
+          type: boolean
+
+    Category:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+
+    Story:
+      type: object
+      required:
+        - id
+        - title
+        - image
+        - viewed
+        - type
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        image:
+          type: string
+          format: uri
+        viewed:
+          type: boolean
+        type:
+          type: string
+          enum: [dish, promo, chef]
+        linkedItemId:
+          type: string
+
+    # ===========================================
+    # AI SCHEMAS
+    # ===========================================
+    ChatMessage:
+      type: object
+      required:
+        - role
+        - text
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+          enum: [user, model]
+        text:
+          type: string
+        isThinking:
+          type: boolean
+
+    ChatContext:
+      type: object
+      properties:
+        searchQuery:
+          type: string
+        activeCategory:
+          type: string
+        restaurantSlug:
+          type: string
+
+    AIResponse:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+        sources:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+
+    # ===========================================
+    # ORDER SCHEMAS
+    # ===========================================
+    CreateOrderRequest:
+      type: object
+      required:
+        - restaurantId
+        - items
+      properties:
+        restaurantId:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        customerNote:
+          type: string
+
+    OrderItem:
+      type: object
+      required:
+        - itemId
+        - quantity
+      properties:
+        itemId:
+          type: string
+        quantity:
+          type: number
+        selectedOptions:
+          type: array
+          items:
+            type: object
+            properties:
+              groupName:
+                type: string
+              optionName:
+                type: string
+              price:
+                type: number
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        restaurantId:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        subtotal:
+          type: number
+        tax:
+          type: number
+        total:
+          type: number
+        status:
+          type: string
+          enum: [pending, confirmed, preparing, ready, delivered]
+        createdAt:
+          type: string
+          format: date-time
+
+    # ===========================================
+    # ERROR SCHEMA
+    # ===========================================
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object

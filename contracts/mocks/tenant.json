@@ -1,0 +1,67 @@
+{
+    "config": {
+        "id": "res_01",
+        "slug": "demo-grill",
+        "name": "MenuOS Grill",
+        "tagline": "Fuego, Sabor & Experiencia",
+        "currency": "$",
+        "coverImage": "https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=1200&q=80",
+        "theme": {
+            "colors": {
+                "primary": "#F94144",
+                "secondary": "#1F2937",
+                "accent": "#F3722C",
+                "dark": "#030712"
+            },
+            "fonts": {
+                "sans": "Inter, sans-serif",
+                "serif": "Playfair Display, serif"
+            }
+        }
+    },
+    "categories": [
+        {
+            "id": "starters",
+            "name": "Entradas"
+        },
+        {
+            "id": "mains",
+            "name": "Fuertes"
+        },
+        {
+            "id": "burgers",
+            "name": "Handhelds"
+        },
+        {
+            "id": "desserts",
+            "name": "Postres"
+        },
+        {
+            "id": "drinks",
+            "name": "Bar"
+        }
+    ],
+    "stories": [
+        {
+            "id": "s1",
+            "title": "Nueva Trufa",
+            "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80",
+            "viewed": false,
+            "type": "dish"
+        },
+        {
+            "id": "s2",
+            "title": "Mesa del Chef",
+            "image": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80",
+            "viewed": false,
+            "type": "chef"
+        },
+        {
+            "id": "s3",
+            "title": "Coctelería",
+            "image": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80",
+            "viewed": true,
+            "type": "promo"
+        }
+    ]
+}
