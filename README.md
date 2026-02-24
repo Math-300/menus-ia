@@ -4,10 +4,11 @@
   <h1 style="font-size: 3rem; font-weight: 700; margin-top: 1rem;">🍽️ MenuOS</h1>
   <p style="font-size: 1.2rem; opacity: 0.8;">Plataforma SaaS de Menús Digitales con IA para Restaurantes</p>
   
-  <img src="https://img.shields.io/badge/React-19.2.4-61DAFB?style=flat-square&logo=react" alt="React" />
+  <img src="https://img.shields.io/badge/Next.js-16.1-000000?style=flat-square&logo=next.js" alt="Next.js" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react" alt="React" />
   <img src="https://img.shields.io/badge/TypeScript-5.8-3178C6?style=flat-square&logo=typescript" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Vite-6.2-646CFF?style=flat-square&logo=vite" alt="Vite" />
-  <img src="https://img.shields.io/badge/Gemini%20AI-Integrated-4285F4?style=flat-square&logo=google" alt="Gemini AI" />
+  <img src="https://img.shields.io/badge/Supabase-PostgreSQL-3FCF8E?style=flat-square&logo=supabase" alt="Supabase" />
+  <img src="https://img.shields.io/badge/OpenRouter-AI-6366F1?style=flat-square" alt="OpenRouter AI" />
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License" />
 </div>
 
@@ -113,12 +114,12 @@ graph TB
 
 | Categoría | Tecnología | Versión |
 |-----------|------------|---------|
-| **Framework** | React | 19.2.4 |
+| **Framework** | Next.js | 16.1 (App Router) |
 | **Lenguaje** | TypeScript | 5.8.2 |
-| **Build Tool** | Vite | 6.2.0 |
-| **IA** | Google Gemini AI | @google/genai 1.40.0 |
+| **Backend** | Supabase | PostgreSQL + Auth |
+| **IA** | OpenRouter | Multi-modelo |
 | **Iconos** | Lucide React | 0.563.0 |
-| **Estilos** | Tailwind CSS | CDN |
+| **Estilos** | Tailwind CSS | 4.x |
 | **Fuentes** | Google Fonts | Inter, Playfair Display |
 
 ---
@@ -129,7 +130,8 @@ graph TB
 
 - **Node.js** >= 18.x
 - **npm** o **yarn**
-- **API Key de Google Gemini** ([Obtener aquí](https://aistudio.google.com/app/apikey))
+- **Cuenta de Supabase** ([Crear aquí](https://supabase.com))
+- **API Key de OpenRouter** ([Obtener aquí](https://openrouter.ai/keys))
 
 ### Pasos de Instalación
 
@@ -142,9 +144,11 @@ cd menus-ia
 npm install
 
 # 3. Crear archivo de variables de entorno
-echo "GEMINI_API_KEY=tu_api_key_aqui" > .env.local
+cp .env.example .env.local
 
-# 4. Iniciar servidor de desarrollo
+# 4. Configurar variables de entorno (ver sección below)
+
+# 5. Iniciar servidor de desarrollo
 npm run dev
 ```
 
@@ -152,8 +156,11 @@ npm run dev
 
 | Variable | Descripción | Requerido |
 |----------|-------------|-----------|
-| `GEMINI_API_KEY` | API Key de Google Gemini | ✅ Sí |
-| `API_KEY` | Alternativa para el servicio | Opcional |
+| `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto Supabase | ✅ Sí |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave anónima de Supabase | ✅ Sí |
+| `SUPABASE_SERVICE_ROLE_KEY` | Clave de servicio de Supabase | ✅ Sí |
+| `OPENROUTER_API_KEY` | API Key de OpenRouter | ✅ Sí |
+| `NEXT_PUBLIC_APP_URL` | URL de la aplicación | Opcional |
 
 ---
 
@@ -161,62 +168,88 @@ npm run dev
 
 ```
 menuos/
-├── 📄 App.tsx                 # Componente raíz y router
-├── 📄 index.tsx               # Punto de entrada
-├── 📄 types.ts                # Definiciones TypeScript
-├── 📄 constants.ts            # Constantes y datos por defecto
-├── 📄 prompts.ts              # Prompts para IA
-├── 📄 metadata.json           # Metadatos de la app
-│
-├── 📂 components/
-│   ├── 📂 admin/              # Componentes del panel admin
-│   │   ├── AdminImageGenModal.tsx
-│   │   ├── AdminMenuTable.tsx
-│   │   ├── AdminMetrics.tsx
-│   │   └── AdminSidebar.tsx
+├── 📂 src/
+│   ├── 📂 app/                    # Next.js App Router
+│   │   ├── layout.tsx             # Layout raíz
+│   │   ├── page.tsx               # Página principal
+│   │   ├── providers.tsx          # Providers de React
+│   │   │
+│   │   ├── 📂 (auth)/             # Grupo de rutas auth
+│   │   │   └── 📂 login/          # Página de login
+│   │   │
+│   │   ├── 📂 (tenant)/           # Grupo de rutas tenant
+│   │   │   └── 📂 [slug]/         # Ruta dinámica por restaurante
+│   │   │
+│   │   ├── 📂 admin/              # Panel de administración
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   │
+│   │   └── 📂 api/                # API Routes
+│   │       └── 📂 ai/             # Endpoints de IA
 │   │
-│   ├── 📂 diner/              # Componentes para comensales
-│   │   ├── ChatBot.tsx
-│   │   ├── DinerFooter.tsx
-│   │   ├── DinerHeader.tsx
-│   │   ├── DinerNavbar.tsx
-│   │   ├── DishCard.tsx
-│   │   ├── DishDetailModal.tsx
-│   │   ├── HeroSection.tsx
-│   │   ├── OrderSummaryModal.tsx
-│   │   ├── SectionRow.tsx
-│   │   ├── SelectionDock.tsx
-│   │   ├── StoryRail.tsx
-│   │   └── StoryViewer.tsx
+│   ├── 📂 components/
+│   │   ├── 📂 admin/              # Componentes del panel admin
+│   │   │   ├── AdminImageGenModal.tsx
+│   │   │   ├── AdminMenuTable.tsx
+│   │   │   ├── AdminMetrics.tsx
+│   │   │   └── AdminSidebar.tsx
+│   │   │
+│   │   ├── 📂 diner/              # Componentes para comensales
+│   │   │   ├── ChatBot.tsx
+│   │   │   ├── DinerClient.tsx
+│   │   │   ├── DinerFooter.tsx
+│   │   │   ├── DinerHeader.tsx
+│   │   │   ├── DinerNavbar.tsx
+│   │   │   ├── DishCard.tsx
+│   │   │   ├── DishDetailModal.tsx
+│   │   │   ├── HeroSection.tsx
+│   │   │   ├── OrderSummaryModal.tsx
+│   │   │   ├── SectionRow.tsx
+│   │   │   ├── SelectionDock.tsx
+│   │   │   ├── StoryRail.tsx
+│   │   │   └── StoryViewer.tsx
+│   │   │
+│   │   └── 📂 ui/                 # Componentes UI reutilizables
+│   │       ├── Modal.tsx
+│   │       ├── Skeleton.tsx
+│   │       └── Toast.tsx
 │   │
-│   └── 📂 ui/                 # Componentes UI reutilizables
-│       ├── Modal.tsx
-│       ├── Skeleton.tsx
-│       └── Toast.tsx
-│
-├── 📂 data/
-│   └── mockData.ts            # Datos de demo multi-tenant
-│
-├── 📂 hooks/
-│   ├── useAdminAI.ts          # Hook para funciones IA admin
-│   ├── useCart.ts             # Hook del carrito
-│   └── useMenuFilter.ts       # Hook de filtrado
-│
-├── 📂 pages/
-│   ├── AdminDashboard.tsx     # Página admin
-│   └── DinerHome.tsx          # Página comensal
-│
-├── 📂 services/
-│   └── geminiService.ts       # Integración Gemini AI
-│
-├── 📂 utils/
-│   ├── format.ts              # Utilidades de formato
-│   ├── theme.ts               # Motor de temas dinámico
-│   └── whatsapp.ts            # Generador de links WhatsApp
+│   ├── 📂 lib/
+│   │   ├── 📂 ai/                 # Integración IA
+│   │   │   ├── openrouter.ts      # Cliente OpenRouter
+│   │   │   ├── chatService.ts     # Servicio de chat
+│   │   │   └── prompts.ts         # Prompts del sistema
+│   │   │
+│   │   ├── 📂 supabase/           # Cliente Supabase
+│   │   │   ├── client.ts          # Cliente browser
+│   │   │   ├── server.ts          # Cliente servidor
+│   │   │   └── admin.ts           # Cliente admin
+│   │   │
+│   │   └── 📂 utils/              # Utilidades
+│   │       ├── cn.ts              # Class names
+│   │       ├── format.ts          # Formateo
+│   │       ├── theme.ts           # Motor de temas
+│   │       └── whatsapp.ts        # Links WhatsApp
+│   │
+│   ├── 📂 hooks/                  # Hooks personalizados
+│   │   ├── useAdminAI.ts
+│   │   ├── useCart.ts
+│   │   └── useMenuFilter.ts
+│   │
+│   ├── 📂 data/
+│   │   └── mockData.ts            # Datos de demo
+│   │
+│   ├── 📂 types/
+│   │   ├── index.ts               # Tipos principales
+│   │   └── database.ts            # Tipos de Supabase
+│   │
+│   └── middleware.ts              # Middleware de autenticación
 │
 ├── 📂 contracts/
-│   ├── openapi.yaml           # Contrato API OpenAPI
-│   └── mocks/                 # Mocks para desarrollo
+│   ├── openapi.yaml               # Contrato API OpenAPI
+│   └── 📂 mocks/                  # Mocks para desarrollo
+│
+├── 📂 public/                     # Archivos estáticos
 │
 └── 📂 .github/
     └── PULL_REQUEST_TEMPLATE.md
@@ -226,9 +259,9 @@ menuos/
 
 ## 🧩 Módulos Principales
 
-### 1. Vista del Comensal ([`DinerHome.tsx`](pages/DinerHome.tsx))
+### 1. Vista del Comensal ([`src/app/(tenant)/[slug]/page.tsx`](src/app/(tenant)/[slug]/page.tsx))
 
-Componente principal que integra:
+Página principal que integra:
 - Header con información del restaurante
 - Rail de Stories
 - Navegación por categorías
@@ -236,7 +269,7 @@ Componente principal que integra:
 - Dock de selección flotante
 - ChatBot concierge
 
-### 2. Panel de Administración ([`AdminDashboard.tsx`](pages/AdminDashboard.tsx))
+### 2. Panel de Administración ([`src/app/admin/page.tsx`](src/app/admin/page.tsx))
 
 Dashboard con:
 - Métricas del menú
@@ -244,7 +277,7 @@ Dashboard con:
 - Modal de generación de imágenes
 - Análisis de salud del menú
 
-### 3. Sistema de Carrito ([`useCart.ts`](hooks/useCart.ts))
+### 3. Sistema de Carrito ([`src/hooks/useCart.ts`](src/hooks/useCart.ts))
 
 Hook personalizado que maneja:
 - Adición de items con modificadores
@@ -280,56 +313,29 @@ interface RestaurantData {
 ### Rutas de Acceso
 
 ```
-#/r/demo-grill      → MenuOS Grill
-#/r/sushi-master    → Omakase Zen
-#/r/green-eats      → Roots & Seeds
-#/admin             → Panel de administración
+/demo-grill         → MenuOS Grill
+/sushi-master       → Omakase Zen
+/green-eats         → Roots & Seeds
+/admin              → Panel de administración
+/login              → Inicio de sesión
 ```
 
 ---
 
-## 🤖 Integración con Gemini AI
+## 🤖 Integración con IA (OpenRouter)
 
 ### Capacidades de IA
 
-```mermaid
-graph LR
-    subgraph Gemini [Google Gemini API]
-        Flash[gemini-3-flash-preview]
-        Pro[gemini-3-pro-preview]
-        Image[gemini-3-pro-image-preview]
-    end
-
-    subgraph Features [Características]
-        Chat[Concierge Chat]
-        Desc[Generar Descripciones]
-        Img[Generar Imágenes]
-        Edit[Editar Imágenes]
-        Rec[Recomendaciones]
-        Analysis[Análisis Menú]
-    end
-
-    Flash --> Chat
-    Flash --> Desc
-    Flash --> Rec
-    Flash --> Analysis
-    Pro --> Chat
-    Image --> Img
-    Image --> Edit
-```
-
-### Funciones Disponibles en [`geminiService.ts`](services/geminiService.ts)
+MenuOS utiliza OpenRouter para acceder a múltiples modelos de IA:
 
 | Función | Modelo | Descripción |
 |---------|--------|-------------|
-| `chatWithConcierge()` | gemini-3-flash-preview | Chat con contexto del menú |
-| `generateDishDescription()` | gemini-3-flash-preview | Descripciones apetitosas |
-| `generateDishImage()` | gemini-3-pro-image-preview | Imágenes de platos |
-| `editDishImage()` | gemini-2.5-flash-image | Edición de imágenes |
-| `analyzeMenuHealth()` | gemini-3-flash-preview | Score y sugerencias |
-| `getRecommendations()` | gemini-3-flash-preview | Recomendaciones personalizadas |
+| `chatWithConcierge()` | openai/gpt-4o-mini | Chat con contexto del menú |
+| `generateDishDescription()` | openai/gpt-4o-mini | Descripciones apetitosas |
+| `analyzeMenuHealth()` | openai/gpt-4o-mini | Score y sugerencias |
+| `getRecommendations()` | openai/gpt-4o-mini | Recomendaciones personalizadas |
 
-### Sistema de Prompts ([`prompts.ts`](prompts.ts))
+### Sistema de Prompts ([`src/lib/ai/prompts.ts`](src/lib/ai/prompts.ts))
 
 Los prompts están optimizados para español y tono de alta cocina:
 
@@ -338,28 +344,48 @@ CONCIERGE_SYSTEM_INSTRUCTION:
   "Eres MenuOS Concierge, un asistente gastronómico sofisticado..."
 ```
 
+### API Routes
+
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/api/ai/chat` | POST | Chat con el concierge |
+| `/api/ai/generate-description` | POST | Generar descripción de plato |
+
 ---
 
 ## 🔌 API y Servicios
 
-### Servicio Gemini ([`geminiService.ts`](services/geminiService.ts))
+### Cliente Supabase ([`src/lib/supabase/`](src/lib/supabase/))
+
+```typescript
+// Cliente para componentes cliente
+import { createBrowserClient } from '@/lib/supabase/client';
+
+// Cliente para Server Components
+import { createServerClient } from '@/lib/supabase/server';
+
+// Cliente admin con service role
+import { createAdminClient } from '@/lib/supabase/admin';
+```
+
+### Servicio OpenRouter ([`src/lib/ai/openrouter.ts`](src/lib/ai/openrouter.ts))
 
 ```typescript
 // Ejemplo: Chat con el concierge
-const response = await chatWithConcierge(
+const response = await chatWithOpenRouter(
   "¿Qué vino recomiendas para el steak?",
   history,
-  useThinkingMode
+  systemPrompt
 );
 
 // Ejemplo: Generar descripción
-const description = await generateDishDescription(
+const description = await generateDescription(
   "Truffle Burger",
   "trufa, queso suizo, brioche"
 );
 ```
 
-### Utilidad WhatsApp ([`whatsapp.ts`](utils/whatsapp.ts))
+### Utilidad WhatsApp ([`src/lib/utils/whatsapp.ts`](src/lib/utils/whatsapp.ts))
 
 ```typescript
 // Generar link de pedido
@@ -379,27 +405,27 @@ const link = generateWhatsAppLink(
 
 | Componente | Archivo | Descripción |
 |------------|---------|-------------|
-| `StoryRail` | [`StoryRail.tsx`](components/diner/StoryRail.tsx) | Barra de stories tipo Instagram |
-| `StoryViewer` | [`StoryViewer.tsx`](components/diner/StoryViewer.tsx) | Visor de stories en pantalla completa |
-| `DishCard` | [`DishCard.tsx`](components/diner/DishCard.tsx) | Tarjeta de plato con animaciones |
-| `DishDetailModal` | [`DishDetailModal.tsx`](components/diner/DishDetailModal.tsx) | Modal de detalle con modificadores |
-| `SelectionDock` | [`SelectionDock.tsx`](components/diner/SelectionDock.tsx) | Dock flotante del carrito |
-| `ChatBot` | [`ChatBot.tsx`](components/diner/ChatBot.tsx) | Asistente virtual flotante |
-| `OrderSummaryModal` | [`OrderSummaryModal.tsx`](components/diner/OrderSummaryModal.tsx) | Resumen de pedido |
+| `StoryRail` | [`StoryRail.tsx`](src/components/diner/StoryRail.tsx) | Barra de stories tipo Instagram |
+| `StoryViewer` | [`StoryViewer.tsx`](src/components/diner/StoryViewer.tsx) | Visor de stories en pantalla completa |
+| `DishCard` | [`DishCard.tsx`](src/components/diner/DishCard.tsx) | Tarjeta de plato con animaciones |
+| `DishDetailModal` | [`DishDetailModal.tsx`](src/components/diner/DishDetailModal.tsx) | Modal de detalle con modificadores |
+| `SelectionDock` | [`SelectionDock.tsx`](src/components/diner/SelectionDock.tsx) | Dock flotante del carrito |
+| `ChatBot` | [`ChatBot.tsx`](src/components/diner/ChatBot.tsx) | Asistente virtual flotante |
+| `OrderSummaryModal` | [`OrderSummaryModal.tsx`](src/components/diner/OrderSummaryModal.tsx) | Resumen de pedido |
 
 ### Componentes UI Base
 
 | Componente | Archivo | Descripción |
 |------------|---------|-------------|
-| `Modal` | [`Modal.tsx`](components/ui/Modal.tsx) | Modal base reutilizable |
-| `Toast` | [`Toast.tsx`](components/ui/Toast.tsx) | Notificaciones toast |
-| `Skeleton` | [`Skeleton.tsx`](components/ui/Skeleton.tsx) | Placeholders de carga |
+| `Modal` | [`Modal.tsx`](src/components/ui/Modal.tsx) | Modal base reutilizable |
+| `Toast` | [`Toast.tsx`](src/components/ui/Toast.tsx) | Notificaciones toast |
+| `Skeleton` | [`Skeleton.tsx`](src/components/ui/Skeleton.tsx) | Placeholders de carga |
 
 ---
 
 ## 🪝 Hooks Personalizados
 
-### [`useCart`](hooks/useCart.ts)
+### [`useCart`](src/hooks/useCart.ts)
 
 Gestión completa del carrito de compras:
 
@@ -413,7 +439,7 @@ const {
 } = useCart();
 ```
 
-### [`useMenuFilter`](hooks/useMenuFilter.ts)
+### [`useMenuFilter`](src/hooks/useMenuFilter.ts)
 
 Filtrado y búsqueda del menú:
 
@@ -427,7 +453,7 @@ const {
 } = useMenuFilter(menuItems);
 ```
 
-### [`useAdminAI`](hooks/useAdminAI.ts)
+### [`useAdminAI`](src/hooks/useAdminAI.ts)
 
 Funciones de IA para el panel admin:
 
